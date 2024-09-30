@@ -1,5 +1,5 @@
 ﻿namespace Snapster;
 
-public partial class MainScene : Node
+public partial class MainScene : Node2D
 {
 }

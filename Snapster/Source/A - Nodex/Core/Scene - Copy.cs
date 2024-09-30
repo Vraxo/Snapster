@@ -29,11 +29,12 @@ public class Scene
             if (string.IsNullOrEmpty(trimmedLine))
                 continue;
 
-            // Check for class type declaration with the required name
-            if (trimmedLine.StartsWith("*"))
+            // Check for class type declaration enclosed in brackets
+            if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
             {
-                // Split the line into components
-                string[] parts = trimmedLine[1..].Trim().Split(' ', 3); // Split into type, name, and optional parent
+                // Remove brackets and split the line into components
+                string content = trimmedLine[1..^1].Trim(); // Remove the brackets
+                string[] parts = content.Split(new[] { ' ' }, 3); // Split into type, name, and optional parent
 
                 if (parts.Length < 2 || parts.Length > 3)
                 {
@@ -41,8 +42,8 @@ public class Scene
                 }
 
                 string typeName = parts[0];         // Type
-                string nodeName = parts[1];         // Node Name
-                string parentName = parts.Length == 3 ? parts[2] : null; // Parent Name (optional for first node)
+                string nodeName = ExtractQuotedString(parts[1]); // Node Name
+                string parentName = parts.Length == 3 ? ExtractQuotedString(parts[2]) : null; // Parent Name (optional for first node)
 
                 Type type = ResolveType(typeName); // Use the new method to resolve the type
 
@@ -104,6 +105,19 @@ public class Scene
         return instance;
     }
 
+    private string ExtractQuotedString(string str)
+    {
+        // Check if the string is surrounded by quotes
+        if (str.Length >= 2 && str.StartsWith("\"") && str.EndsWith("\""))
+        {
+            // Remove the quotes
+            return str[1..^1];
+        }
+
+        // If it's not quoted, return as is (this shouldn't happen in the new format)
+        return str;
+    }
+
     private Type ResolveType(string typeName)
     {
         // Get all loaded assemblies
@@ -132,7 +146,7 @@ public class Scene
         return null;
     }
 
-    private static void SetValue(object obj, string name, object value)
+    private void SetValue(object obj, string name, object value)
     {
         string[] pathSegments = name.Split('/');
         Type type = obj.GetType();
@@ -157,15 +171,10 @@ public class Scene
 
         if (propertyInfo != null && propertyInfo.CanWrite)
         {
-            // Handle Vector2 property
+            // Handle Vector2 property in the format Vector2(x, y)
             if (propertyInfo.PropertyType == typeof(Vector2))
             {
-                string[] tokens = value.ToString().Split(' ');
-
-                float x = float.Parse(tokens[0]);
-                float y = float.Parse(tokens[1]);
-
-                propertyInfo.SetValue(obj, new Vector2(x, y));
+                propertyInfo.SetValue(obj, ParseVector2(value.ToString()));
                 return;
             }
 
@@ -202,20 +211,41 @@ public class Scene
                 return;
             }
 
+            // Reuse ExtractQuotedString for string values
             if (propertyInfo.PropertyType == typeof(string))
             {
-                string stringValue = value.ToString();
-
-                if (stringValue.Length >= 2 && stringValue.StartsWith("\"") && stringValue.EndsWith("\""))
-                {
-                    stringValue = stringValue[1..^1];
-                }
-
-                propertyInfo.SetValue(obj, stringValue);
+                propertyInfo.SetValue(obj, ExtractQuotedString(value.ToString()));
                 return;
             }
 
             propertyInfo.SetValue(obj, value);
+        }
+    }
+
+    private static Vector2 ParseVector2(string value)
+    {
+        string stringValue = value.Trim();
+
+        if (stringValue.StartsWith("Vector2(") && stringValue.EndsWith(")"))
+        {
+            string vectorValues = stringValue.Substring(8, stringValue.Length - 9);
+            string[] tokens = vectorValues.Split(',');
+
+            if (tokens.Length == 2)
+            {
+                float x = float.Parse(tokens[0].Trim());
+                float y = float.Parse(tokens[1].Trim());
+
+                return new(x, y);
+            }
+            else
+            {
+                throw new Exception("Vector2 should contain exactly two numeric values.");
+            }
+        }
+        else
+        {
+            throw new Exception($"Invalid Vector2 format, expected format: Vector2(x, y)");
         }
     }
 }

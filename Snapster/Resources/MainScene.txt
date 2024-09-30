@@ -1,3 +1,5 @@
-﻿*MainScene TheMainScene
-*ImageDisplayer CoolImageDisplayer TheMainScene
-*TexturedRectangle TexturedRectangle CoolImageDisplayer
+﻿[MainScene "TheMainScene"]
+[ImageDisplayer "CoolImageDisplayer" "TheMainScene"]
+[TexturedRectangle "TexturedRectangle" "CoolImageDisplayer"]
+Visible = true
+Position = Vector2(10, 10)

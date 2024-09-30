@@ -1,6 +1,6 @@
 ﻿namespace Snapster;
 
-public partial class MainScene : Node
+public partial class MainScene : Node2D
 {
     public override void Build()
     {
