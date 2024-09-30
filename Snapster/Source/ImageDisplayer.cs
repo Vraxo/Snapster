@@ -1,7 +1,4 @@
-﻿using Raylib_cs;
-using System.Numerics; // For Vector2
-
-namespace Snapster;
+﻿namespace Snapster;
 
 public partial class ImageDisplayer : AspectRatioContainer
 {
