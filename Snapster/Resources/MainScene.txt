@@ -1,5 +1,2 @@
 ﻿[MainScene "TheMainScene"]
-[ImageDisplayer "CoolImageDisplayer" "TheMainScene"]
-[TexturedRectangle "TexturedRectangle" "CoolImageDisplayer"]
-Visible = true
-Position = Vector2(10, 10)
+[Scene "ImageDisplayer" "TheMainScene" "Resources/ImageDisplayer.txt"]

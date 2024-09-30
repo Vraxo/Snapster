@@ -32,4 +32,9 @@ public class TextureLoader
             Textures.Remove(name);
         }
     }
+
+    public bool Contains(string name)
+    {
+        return Textures.ContainsKey(name);
+    }
 }

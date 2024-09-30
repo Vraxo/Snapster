@@ -6,18 +6,18 @@ public partial class MainScene : Node
 {
     private string[] images;
     private int index = 0;
-    private ImageDisplayer imageDisplayer;
+    private TexturedRectangle imageDisplayer;
     private float keyHoldTime = 0.0f;
     private const float delayBeforeRepeat = 0.5f;
     private const float repeatRate = 0.1f;
     private bool isRightKeyHeld = false;
     private bool isLeftKeyHeld = false;
-    private bool isFullscreen = false; // Track if we're in fullscreen mode
+    private bool isFullscreen = false;
 
     public override void Start()
     {
         images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
-        imageDisplayer = GetNode<ImageDisplayer>("ImageDisplayer");
+        imageDisplayer = GetNode<TexturedRectangle>("ImageDisplayer/TexturedRectangle");
         base.Start();
     }
 
@@ -117,6 +117,6 @@ public partial class MainScene : Node
     {
         string image = images[index];
         TextureLoader.Instance.Add(images[index], images[index]);
-        //imageDisplayer.Texture = TextureLoader.Instance.Textures[image];
+        imageDisplayer.LoadTexture(image);
     }
 }

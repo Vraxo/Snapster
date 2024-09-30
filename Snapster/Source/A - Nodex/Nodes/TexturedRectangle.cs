@@ -19,9 +19,9 @@ public class TexturedRectangle : Node2D
         base.Update();
     }
 
-    public void LoadTexture(string texturePath)
+    public void LoadTexture(string name)
     {
-        Texture = Raylib.LoadTexture(texturePath);
+        Texture = TextureLoader.Instance.Textures[name];
         Size = new(Texture.Width, Texture.Height);
     }
 

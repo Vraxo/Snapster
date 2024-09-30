@@ -4,7 +4,8 @@ public partial class ImageDisplayer : AspectRatioContainer
 {
     public override void Start()
     {
-        GetNode<TexturedRectangle>("TexturedRectangle").LoadTexture("Resources/Texture.png");
+        TextureLoader.Instance.Add("DefaultTexture", "Resources/Texture.png");
+        GetNode<TexturedRectangle>("TexturedRectangle").LoadTexture("DefaultTexture");
     }
 
     public override void Update()

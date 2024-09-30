@@ -14,7 +14,6 @@ public class Scene
     public T Instantiate<T>() where T : new()
     {
         T instance = new();
-
         string[] fileLines = File.ReadAllLines(path);
         object obj = null;
         bool firstNode = true;
@@ -24,69 +23,79 @@ public class Scene
 
         foreach (string line in fileLines)
         {
-            // Trim whitespace and check if the line is empty
             string trimmedLine = line.Trim();
-            if (string.IsNullOrEmpty(trimmedLine))
-                continue;
+            if (string.IsNullOrEmpty(trimmedLine)) continue;
 
-            // Check for class type declaration enclosed in brackets
             if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
             {
-                // Remove brackets and split the line into components
-                string content = trimmedLine[1..^1].Trim(); // Remove the brackets
-                string[] parts = content.Split(new[] { ' ' }, 3); // Split into type, name, and optional parent
-
-                if (parts.Length < 2 || parts.Length > 3)
-                {
-                    throw new Exception("Each node declaration must have a type and a name, and optionally a parent.");
-                }
+                string content = trimmedLine[1..^1].Trim();
+                string[] parts = content.Split(new[] { ' ' }, 4); // Handle up to 4 parts (with scene reference)
 
                 string typeName = parts[0];
                 string nodeName = ExtractQuotedString(parts[1]);
-                string parentName = parts.Length == 3 ? ExtractQuotedString(parts[2]) : null;
+                string parentName = parts.Length >= 3 ? ExtractQuotedString(parts[2]) : null;
 
-                Type type = ResolveType(typeName);
-
-                if (type == null)
+                // Check if it's a SceneReference
+                if (typeName == "Scene" && parts.Length == 4)
                 {
-                    throw new Exception($"Type '{typeName}' could not be found.");
-                }
+                    string scenePath = ExtractQuotedString(parts[3]);
 
-                obj = Activator.CreateInstance(type);
+                    // Recursively load the scene
+                    Scene referencedScene = new Scene(scenePath);
+                    var referencedRootNode = referencedScene.Instantiate<Node>(); // Assume the root is of type Node
 
-                if (firstNode)
-                {
-                    (obj as Node).Name = nodeName;
-                    instance = (T)obj;
-                    namedNodes[nodeName] = (Node)obj;
-                    firstNode = false;
-                }
-                else
-                {
-                    if (parentName == null)
+                    // Set the name of the root node of the referenced scene
+                    referencedRootNode.Name = nodeName;
+
+                    if (parentName == null && firstNode)
                     {
-                        throw new Exception($"Node '{nodeName}' must specify a parent.");
+                        instance = (T)(object)referencedRootNode; // Cast to T (since it's Node) and assign as the root
+                        namedNodes[nodeName] = referencedRootNode;
+                        firstNode = false;
                     }
-
-                    if (namedNodes.TryGetValue(parentName, out Node parentNode))
+                    else if (namedNodes.TryGetValue(parentName, out Node parentNode))
                     {
-                        // Use the custom AddChild method with the name
-                        parentNode.AddChild(obj as Node, nodeName, false);
+                        parentNode.AddChild(referencedRootNode, nodeName, false); // Add the referenced scene's root node as a child
+                        namedNodes[nodeName] = referencedRootNode;
                     }
                     else
                     {
-                        throw new Exception($"Parent node '{parentName}' could not be found for node '{nodeName}'.");
+                        throw new Exception($"Parent node '{parentName}' not found for SceneReference.");
                     }
                 }
+                else
+                {
+                    // Normal node creation (existing behavior)
+                    Type type = ResolveType(typeName);
+                    obj = Activator.CreateInstance(type);
 
-                namedNodes[nodeName] = (Node)obj;
+                    if (firstNode)
+                    {
+                        (obj as Node).Name = nodeName;
+                        instance = (T)obj;
+                        namedNodes[nodeName] = (Node)obj;
+                        firstNode = false;
+                    }
+                    else
+                    {
+                        if (parentName == null) throw new Exception($"Node '{nodeName}' must specify a parent.");
+                        if (namedNodes.TryGetValue(parentName, out Node parentNode))
+                        {
+                            parentNode.AddChild(obj as Node, nodeName, false);
+                        }
+                        else
+                        {
+                            throw new Exception($"Parent node '{parentName}' could not be found for node '{nodeName}'.");
+                        }
+                    }
+                    namedNodes[nodeName] = (Node)obj;
+                }
             }
             else if (trimmedLine.Contains(" = "))
             {
                 int equalsIndex = trimmedLine.IndexOf(" = ");
                 string fieldName = trimmedLine.Substring(0, equalsIndex).Trim();
                 string value = trimmedLine.Substring(equalsIndex + 3).Trim();
-
                 SetValue(obj, fieldName, value);
             }
         }
