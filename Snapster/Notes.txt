@@ -1,0 +1,1 @@
+﻿* Add support for both file and hard-coded scenes.

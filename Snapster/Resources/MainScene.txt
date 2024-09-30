@@ -1,0 +1,3 @@
+﻿[MainScene]
+[ImageDisplayer]
+Name = "The Best"
