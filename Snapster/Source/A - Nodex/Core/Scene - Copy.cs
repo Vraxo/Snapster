@@ -41,11 +41,11 @@ public class Scene
                     throw new Exception("Each node declaration must have a type and a name, and optionally a parent.");
                 }
 
-                string typeName = parts[0];         // Type
-                string nodeName = ExtractQuotedString(parts[1]); // Node Name
-                string parentName = parts.Length == 3 ? ExtractQuotedString(parts[2]) : null; // Parent Name (optional for first node)
+                string typeName = parts[0];
+                string nodeName = ExtractQuotedString(parts[1]);
+                string parentName = parts.Length == 3 ? ExtractQuotedString(parts[2]) : null;
 
-                Type type = ResolveType(typeName); // Use the new method to resolve the type
+                Type type = ResolveType(typeName);
 
                 if (type == null)
                 {
@@ -56,7 +56,6 @@ public class Scene
 
                 if (firstNode)
                 {
-                    // For the root node, set its name and add it to namedNodes
                     (obj as Node).Name = nodeName;
                     instance = (T)obj;
                     namedNodes[nodeName] = (Node)obj;
@@ -64,13 +63,11 @@ public class Scene
                 }
                 else
                 {
-                    // For subsequent nodes, check for parent name and add as a child
                     if (parentName == null)
                     {
                         throw new Exception($"Node '{nodeName}' must specify a parent.");
                     }
 
-                    // Find the parent node by name
                     if (namedNodes.TryGetValue(parentName, out Node parentNode))
                     {
                         // Use the custom AddChild method with the name
@@ -82,12 +79,10 @@ public class Scene
                     }
                 }
 
-                // Add the node to the namedNodes dictionary
                 namedNodes[nodeName] = (Node)obj;
             }
             else if (trimmedLine.Contains(" = "))
             {
-                // Split only on the first occurrence of " = "
                 int equalsIndex = trimmedLine.IndexOf(" = ");
                 string fieldName = trimmedLine.Substring(0, equalsIndex).Trim();
                 string value = trimmedLine.Substring(equalsIndex + 3).Trim();
@@ -96,7 +91,6 @@ public class Scene
             }
         }
 
-        // Start all child nodes of the root node
         foreach (Node child in (instance as Node).Children)
         {
             child.Start();
@@ -107,23 +101,20 @@ public class Scene
 
     private string ExtractQuotedString(string str)
     {
-        // Check if the string is surrounded by quotes
         if (str.Length >= 2 && str.StartsWith("\"") && str.EndsWith("\""))
         {
-            // Remove the quotes
             return str[1..^1];
         }
 
-        // If it's not quoted, return as is (this shouldn't happen in the new format)
         return str;
     }
 
     private Type ResolveType(string typeName)
     {
         // Get all loaded assemblies
-        var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+        Assembly[] assemblies = AppDomain.CurrentDomain.GetAssemblies();
 
-        foreach (var assembly in assemblies)
+        foreach (Assembly assembly in assemblies)
         {
             // Try to find the type in the current assembly
             var type = assembly.GetType(typeName, false, true);
@@ -171,14 +162,12 @@ public class Scene
 
         if (propertyInfo != null && propertyInfo.CanWrite)
         {
-            // Handle Vector2 property in the format Vector2(x, y)
             if (propertyInfo.PropertyType == typeof(Vector2))
             {
                 propertyInfo.SetValue(obj, ParseVector2(value.ToString()));
                 return;
             }
 
-            // Handle Enum property
             if (propertyInfo.PropertyType.IsEnum)
             {
                 var enumValue = Enum.Parse(propertyInfo.PropertyType, value.ToString());
@@ -186,7 +175,6 @@ public class Scene
                 return;
             }
 
-            // Handle other property types
             if (propertyInfo.PropertyType == typeof(int))
             {
                 propertyInfo.SetValue(obj, int.Parse(value.ToString()));
@@ -211,7 +199,6 @@ public class Scene
                 return;
             }
 
-            // Reuse ExtractQuotedString for string values
             if (propertyInfo.PropertyType == typeof(string))
             {
                 propertyInfo.SetValue(obj, ExtractQuotedString(value.ToString()));

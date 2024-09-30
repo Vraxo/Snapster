@@ -17,13 +17,19 @@ public class TextureLoader
         }
     }
 
-    public void Add(string name, Texture2D texture)
+    public void Add(string name, string path)
     {
-        Textures.Add(name, texture);
+        if (!Textures.ContainsKey(name))
+        {
+            Textures.Add(name, Raylib.LoadTexture(path));
+        }
     }
 
     public void Remove(string name)
     {
-        Textures.Remove(name);
+        if (Textures.ContainsKey(name))
+        {
+            Textures.Remove(name);
+        }
     }
 }
