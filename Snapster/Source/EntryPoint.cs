@@ -9,7 +9,6 @@ public class EntryPoint
         {
             Title = "Snapster",
             Resolution = new(640, 480),
-            ClearColor = ThemeLoader.Instance.Colors["Background"]
         };
 
         //MainScene rootNode = new();

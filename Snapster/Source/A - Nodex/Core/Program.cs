@@ -64,8 +64,8 @@ public class Program
         while (!Raylib.WindowShouldClose())
         {
             Raylib.BeginDrawing();
-                Raylib.ClearBackground(windowData.ClearColor);
-                RootNode.Process();
+            Raylib.ClearBackground(ThemeLoader.Instance.Colors["Background"]);
+            RootNode.Process();
             Raylib.EndDrawing();
 
             PrintTree();

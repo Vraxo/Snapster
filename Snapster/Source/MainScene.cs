@@ -1,4 +1,7 @@
 ﻿using Raylib_cs;
+using SixLabors.ImageSharp;
+using System.Threading;
+using Image = SixLabors.ImageSharp.Image;
 
 namespace Snapster;
 
@@ -16,8 +19,49 @@ public partial class MainScene : Node
 
     public override void Start()
     {
-        images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
         imageDisplayer = GetNode<TexturedRectangle>("ImageDisplayer/TexturedRectangle");
+
+        if (Program.Args.Length == 0)
+        {
+            images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
+            TextureLoader.Instance.Add("DefaultTexture", "Resources/Texture.png");
+            imageDisplayer.LoadTexture("DefaultTexture");
+            index = 0;
+        }
+        else
+        {
+            string imagePath = Program.Args.First();
+            string imageDirectory = Path.GetDirectoryName(imagePath);
+            string pngPath = Path.Combine("Resources", Path.GetFileNameWithoutExtension(imagePath) + ".png");
+
+            if (!imagePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                ConvertToPng(imagePath, pngPath);
+                imagePath = pngPath;
+            }
+
+            TextureLoader.Instance.Add(Program.Args.First(), imagePath);
+            imageDisplayer.LoadTexture(Program.Args.First());
+
+            images = Directory.GetFiles(imageDirectory, "*.*")
+                              .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                             file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                             file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                              .ToArray();
+            
+            index = Array.IndexOf(images, Program.Args.First());
+            
+            if (index == -1)
+            {
+                index = 0;
+            }
+            
+            if (File.Exists(pngPath))
+            {
+                File.Delete(pngPath);
+            }
+        }
+
         base.Start();
     }
 
@@ -95,20 +139,17 @@ public partial class MainScene : Node
         // Toggle fullscreen when the space key is pressed
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
-            Raylib.ToggleFullscreen();
-            isFullscreen = !isFullscreen;
-
-            // When fullscreen is activated, update the window size to the screen resolution
-            if (isFullscreen)
+            if (!Raylib.IsWindowFullscreen())
             {
-                int screenWidth = Raylib.GetScreenWidth();   // Fullscreen width
-                int screenHeight = Raylib.GetScreenHeight(); // Fullscreen height
-                Raylib.SetWindowSize(screenWidth, screenHeight);
+                Screen.PreviousSize = Screen.Size;
+                int monitor = Raylib.GetCurrentMonitor();
+                Raylib.SetWindowSize(Raylib.GetMonitorWidth(monitor), Raylib.GetMonitorHeight(monitor));
+                Raylib.ToggleFullscreen();
             }
             else
             {
-                // Optionally, you can reset the window to a specific size when exiting fullscreen
-                Raylib.SetWindowSize(1280, 720); // Example resolution for windowed mode
+                Raylib.ToggleFullscreen();
+                Raylib.SetWindowSize((int)Screen.PreviousSize.X, (int)Screen.PreviousSize.Y);
             }
         }
     }
@@ -116,7 +157,29 @@ public partial class MainScene : Node
     private void ChangeImage()
     {
         string image = images[index];
-        TextureLoader.Instance.Add(images[index], images[index]);
-        imageDisplayer.LoadTexture(image);
+        string pngPath = Path.Combine("Resources", Path.GetFileNameWithoutExtension(image) + ".png");
+
+        if (!TextureLoader.Instance.Contains(images[index]))
+        {
+            if (!image.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+            {
+                ConvertToPng(image, pngPath);
+                image = pngPath;
+            }
+        }
+
+        TextureLoader.Instance.Add(images[index], image);
+        imageDisplayer.LoadTexture(images[index]);
+
+        if (File.Exists(pngPath))
+        {
+            File.Delete(pngPath);
+        }
+    }
+
+    public static void ConvertToPng(string inputPath, string outputPath)
+    {
+        using Image image = Image.Load(inputPath);
+        image.SaveAsPng(outputPath);
     }
 }
