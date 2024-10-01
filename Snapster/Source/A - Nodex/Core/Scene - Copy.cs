@@ -8,7 +8,15 @@ public class Scene
 
     public Scene(string path)
     {
-        this.path = path;
+        // Only prepend "Resources/Scenes/" if the provided path doesn't already start with it
+        if (!path.StartsWith("Resources/Scenes/"))
+        {
+            this.path = $"Resources/Scenes/{path}";
+        }
+        else
+        {
+            this.path = path;
+        }
     }
 
     public T Instantiate<T>() where T : new()
@@ -39,6 +47,12 @@ public class Scene
                 if (typeName == "Scene" && parts.Length == 4)
                 {
                     string scenePath = ExtractQuotedString(parts[3]);
+
+                    // Only prepend Resources/Scenes/ if not already present
+                    if (!scenePath.StartsWith("Resources/Scenes/"))
+                    {
+                        scenePath = $"Resources/Scenes/{scenePath}";
+                    }
 
                     // Recursively load the scene
                     Scene referencedScene = new Scene(scenePath);

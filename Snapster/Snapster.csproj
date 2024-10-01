@@ -6,7 +6,12 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Resources\Icon\Icon.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\Icon\Icon.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Raylib-cs" Version="6.1.1" />
@@ -22,10 +27,10 @@
     <None Update="Resources\Icon\Icon.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\ImageDisplayer.txt">
+    <None Update="Resources\Scenes\ImageDisplayer.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Update="Resources\MainScene.txt">
+    <None Update="Resources\Scenes\MainScene.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\Texture.png">

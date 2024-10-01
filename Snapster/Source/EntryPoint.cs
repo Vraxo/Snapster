@@ -17,7 +17,7 @@ public class EntryPoint
         Program program = new(windowData, args);
         program.Initialize();
 
-        var rootNode = new Scene("Resources/MainScene.txt").Instantiate<MainScene>();
+        var rootNode = new Scene("MainScene.txt").Instantiate<MainScene>();
 
         program.RootNode = rootNode;
         program.Run();

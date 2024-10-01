@@ -39,15 +39,8 @@ public class Program
         Raylib.InitWindow(width, height, windowData.Title);
         Raylib.SetWindowMinSize(width, height);
         Raylib.InitAudioDevice();
-
         Raylib.SetTargetFPS(60);
-
         Raylib.SetWindowIcon(Raylib.LoadImage("Resources/Icon/Icon.png"));
-        
-        //Scene scene = new(rootNode);
-        //var mainScene = scene.Instantiate<MainScene>();
-        //RootNode = mainScene;
-
     }
 
     private static void SetCurrentDirectory()
@@ -84,13 +77,11 @@ public class Program
         if (Raylib.IsKeyPressed(KeyboardKey.Enter))
         {
             Console.Clear();
+            RootNode.PrintChildren();
 
             //Random random = new();
             //int r = random.Next(1000);
-
             //Raylib.TakeScreenshot($"Screenshot{r}.png");
-
-            RootNode.PrintChildren();
         }
     }
 }

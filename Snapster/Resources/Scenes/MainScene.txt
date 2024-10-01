@@ -1,0 +1,2 @@
+﻿[MainScene "MainScene"]
+[Scene "ImageDisplayer" "MainScene" "ImageDisplayer.txt"]
