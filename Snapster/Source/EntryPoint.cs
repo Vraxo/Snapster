@@ -1,4 +1,6 @@
-﻿namespace Snapster;
+﻿using Nodica;
+
+namespace Snapster;
 
 public class EntryPoint
 {

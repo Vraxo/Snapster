@@ -1,4 +1,5 @@
-﻿using Raylib_cs;
+﻿using Nodica;
+using Raylib_cs;
 using SixLabors.ImageSharp;
 using Image = SixLabors.ImageSharp.Image;
 
@@ -22,12 +23,7 @@ public class MainScene : Node
 
         if (App.Instance.Args.Length == 0)
         {
-            //images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
-            //TextureLoader.Instance.Add("DefaultTexture", "Resources/Texture.png");
-            //imageDisplayer.LoadTexture("DefaultTexture");
-            //index = 0;
-
-            //Environment.Exit(0);
+            Environment.Exit(0);
         }
         else
         {
@@ -146,7 +142,7 @@ public class MainScene : Node
         {
             if (!Raylib.IsWindowFullscreen())
             {
-                Screen.PreviousSize = Screen.Size;
+                Window.PreviousSize = Window.Size;
                 int monitor = Raylib.GetCurrentMonitor();
                 Raylib.SetWindowSize(Raylib.GetMonitorWidth(monitor), Raylib.GetMonitorHeight(monitor));
                 Raylib.ToggleFullscreen();
@@ -154,7 +150,7 @@ public class MainScene : Node
             else
             {
                 Raylib.ToggleFullscreen();
-                Raylib.SetWindowSize((int)Screen.PreviousSize.X, (int)Screen.PreviousSize.Y);
+                Raylib.SetWindowSize((int)Window.PreviousSize.X, (int)Window.PreviousSize.Y);
             }
         }
     }
