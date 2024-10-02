@@ -5,14 +5,7 @@ public class EntryPoint
     [STAThread]
     public static void Main(string[] args)
     {
-        WindowData windowData = new()
-        {
-            Title = "Snapster",
-            Resolution = new(640, 480),
-        };
-
-        App.Instance.Setup(windowData, args);
-        App.Instance.Initialize();
+        App.Instance.Initialize(640, 480, "Snapster", args);
 
         var rootNode = new Scene("MainScene.txt").Instantiate<MainScene>();
 

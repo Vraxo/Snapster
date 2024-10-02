@@ -10,8 +10,6 @@ public class App
     public Node RootNode;
     public string[] Args;
 
-    private WindowData windowData;
-
     public static App Instance
     {
         get
@@ -19,12 +17,6 @@ public class App
             instance ??= new();
             return instance;
         }
-    }
-
-    public void Setup(WindowData windowData, string[] args)
-    {
-        this.windowData = windowData;
-        Args = args;
     }
 
     public void Run()
@@ -35,18 +27,17 @@ public class App
         RunLoop();
     }
 
-    public void Initialize()
+    public void Initialize(int width, int height, string title, string[] args)
     {
+        Args = args;
+
         SetCurrentDirectory();
 
-        Screen.OriginalSize = windowData.Resolution;
-
-        int width = (int)windowData.Resolution.X;
-        int height = (int)windowData.Resolution.Y;
+        Screen.OriginalSize = new(width, height);
 
         SetWindowFlags();
 
-        Raylib.InitWindow(width, height, windowData.Title);
+        Raylib.InitWindow(width, height, title);
         Raylib.SetWindowMinSize(width, height);
         Raylib.InitAudioDevice();
         Raylib.SetTargetFPS(60);
