@@ -3,14 +3,25 @@ using System.Reflection;
 
 namespace Snapster;
 
-public class Program
+public class App
 {
+    private static App? instance;
+
     public Node RootNode;
     public string[] Args;
 
-    private readonly WindowData windowData;
+    private WindowData windowData;
 
-    public Program(WindowData windowData, string[] args)
+    public static App Instance
+    {
+        get
+        {
+            instance ??= new();
+            return instance;
+        }
+    }
+
+    public void Setup(WindowData windowData, string[] args)
     {
         this.windowData = windowData;
         Args = args;
@@ -18,7 +29,6 @@ public class Program
 
     public void Run()
     {
-        RootNode.Program = this;
         RootNode.Build();
         RootNode.Start();
 

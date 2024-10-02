@@ -11,14 +11,12 @@ public class EntryPoint
             Resolution = new(640, 480),
         };
 
-        //MainScene rootNode = new();
-
-        Program program = new(windowData, args);
-        program.Initialize();
+        App.Instance.Setup(windowData, args);
+        App.Instance.Initialize();
 
         var rootNode = new Scene("MainScene.txt").Instantiate<MainScene>();
 
-        program.RootNode = rootNode;
-        program.Run();
+        App.Instance.RootNode = rootNode;
+        App.Instance.Run();
     }
 }

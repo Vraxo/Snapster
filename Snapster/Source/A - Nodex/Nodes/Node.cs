@@ -7,21 +7,7 @@ public class Node
     public List<Node> Children { get; set; } = [];
     public bool Active { get; private set; } = true;
 
-    public Node RootNode => Program.RootNode;
-
-    private Program _program;
-    public Program Program
-    {
-        get => _program;
-        set
-        {
-            _program = value;
-            foreach (var child in Children)
-            {
-                child.Program = value;
-            }
-        }
-    }
+    public Node RootNode => App.Instance.RootNode;
 
     private bool started = false;
 
@@ -125,7 +111,7 @@ public class Node
         if (path.StartsWith("/root"))
         {
             path = path.Substring("/root".Length);
-            Node currentNode = Program.RootNode;
+            Node currentNode = App.Instance.RootNode;
 
             // RemoveItem leading slash for absolute paths
             if (path.StartsWith("/"))
@@ -173,49 +159,49 @@ public class Node
         }
     }
 
-    public T? GetNode1000<T>(string path) where T : Node
-    {
-        if (path == "")
-        {
-            return (T)Program.RootNode;
-        }
-
-        string[] nodeNames = path.Split('/');
-
-        Node currentNode = Program.RootNode;
-
-        for (int i = 0; i < nodeNames.Length; i++)
-        {
-            currentNode = currentNode.GetChild(nodeNames[i]);
-        }
-
-        return (T)currentNode;
-    }
-
-    public T? GetNode<T>() where T : Node
-    {
-        string typeName = typeof(T).Name;
-        return GetNode1000<T>(typeName);
-    }
-
-    public Node GetNode(string path)
-    {
-        if (path == "")
-        {
-            return Program.RootNode;
-        }
-
-        string[] nodeNames = path.Split('/');
-
-        Node currentNode = Program.RootNode;
-
-        for (int i = 0; i < nodeNames.Length; i++)
-        {
-            currentNode = currentNode.GetChild(nodeNames[i]);
-        }
-
-        return currentNode;
-    }
+    //public T? GetNode1000<T>(string path) where T : Node
+    //{
+    //    if (path == "")
+    //    {
+    //        return (T)App.Instance.RootNode;
+    //    }
+    //
+    //    string[] nodeNames = path.Split('/');
+    //
+    //    Node currentNode = App.Instance.RootNode;
+    //
+    //    for (int i = 0; i < nodeNames.Length; i++)
+    //    {
+    //        currentNode = currentNode.GetChild(nodeNames[i]);
+    //    }
+    //
+    //    return (T)currentNode;
+    //}
+    //
+    //public T? GetNode<T>() where T : Node
+    //{
+    //    string typeName = typeof(T).Name;
+    //    return GetNode1000<T>(typeName);
+    //}
+    //
+    //public Node GetNode(string path)
+    //{
+    //    if (path == "")
+    //    {
+    //        return App.Instance.RootNode;
+    //    }
+    //
+    //    string[] nodeNames = path.Split('/');
+    //
+    //    Node currentNode = Program.RootNode;
+    //
+    //    for (int i = 0; i < nodeNames.Length; i++)
+    //    {
+    //        currentNode = currentNode.GetChild(nodeNames[i]);
+    //    }
+    //
+    //    return currentNode;
+    //}
 
     // Get child
 
@@ -263,7 +249,6 @@ public class Node
     public void AddChild(Node node, string name, bool start = true)
     {
         node.Name = name;
-        node.Program = Program;
         node.Parent = this;
 
         node.Build();
@@ -279,7 +264,6 @@ public class Node
     public void AddChild(Node node, bool start = true)
     {
         node.Name = node.GetType().Name;
-        node.Program = Program;
         node.Parent = this;
         
         node.Build();
@@ -296,11 +280,10 @@ public class Node
 
     public void ChangeScene(Node node)
     {
-        //Program.ResetView();
-        Program.RootNode.Destroy();
-        Program.RootNode = node;
+        //App.ResetView();
+        App.Instance.RootNode.Destroy();
+        App.Instance.RootNode = node;
 
         node.Name = node.GetType().Name;
-        node.Program = Program;
     }
 }

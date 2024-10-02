@@ -1,11 +1,10 @@
 ﻿using Raylib_cs;
 using SixLabors.ImageSharp;
-using System.Threading;
 using Image = SixLabors.ImageSharp.Image;
 
 namespace Snapster;
 
-public partial class MainScene : Node
+public class MainScene : Node
 {
     private string[] images;
     private int index = 0;
@@ -21,45 +20,18 @@ public partial class MainScene : Node
     {
         imageDisplayer = GetNode<TexturedRectangle>("ImageDisplayer/TexturedRectangle");
 
-        if (Program.Args.Length == 0)
+        if (App.Instance.Args.Length == 0)
         {
-            images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
-            TextureLoader.Instance.Add("DefaultTexture", "Resources/Texture.png");
-            imageDisplayer.LoadTexture("DefaultTexture");
-            index = 0;
+            //images = Directory.GetFiles(@"D:\Parsa Stuff\Screenshots\New folder (2)");
+            //TextureLoader.Instance.Add("DefaultTexture", "Resources/Texture.png");
+            //imageDisplayer.LoadTexture("DefaultTexture");
+            //index = 0;
+
+            //Environment.Exit(0);
         }
         else
         {
-            string imagePath = Program.Args.First();
-            string imageDirectory = Path.GetDirectoryName(imagePath);
-            string pngPath = Path.Combine("Resources", Path.GetFileNameWithoutExtension(imagePath) + ".png");
-
-            if (!imagePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-            {
-                ConvertToPng(imagePath, pngPath);
-                imagePath = pngPath;
-            }
-
-            TextureLoader.Instance.Add(Program.Args.First(), imagePath);
-            imageDisplayer.LoadTexture(Program.Args.First());
-
-            images = Directory.GetFiles(imageDirectory, "*.*")
-                              .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
-                                             file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
-                                             file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
-                              .ToArray();
-            
-            index = Array.IndexOf(images, Program.Args.First());
-            
-            if (index == -1)
-            {
-                index = 0;
-            }
-            
-            if (File.Exists(pngPath))
-            {
-                File.Delete(pngPath);
-            }
+            LoadImageAndDirectory();
         }
 
         base.Start();
@@ -71,6 +43,40 @@ public partial class MainScene : Node
         UpdateKeyHeldState();
         HandleFullscreenToggle();
         base.Update();
+    }
+
+    private void LoadImageAndDirectory()
+    {
+        string imagePath = App.Instance.Args.First();
+        string imageDirectory = Path.GetDirectoryName(imagePath);
+        string pngPath = Path.Combine("Resources", Path.GetFileNameWithoutExtension(imagePath) + ".png");
+
+        if (!imagePath.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
+        {
+            ConvertToPng(imagePath, pngPath);
+            imagePath = pngPath;
+        }
+
+        TextureLoader.Instance.Add(App.Instance.Args.First(), imagePath);
+        imageDisplayer.LoadTexture(App.Instance.Args.First());
+
+        images = Directory.GetFiles(imageDirectory, "*.*")
+                          .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||
+                                         file.EndsWith(".jpg", StringComparison.OrdinalIgnoreCase) ||
+                                         file.EndsWith(".jpeg", StringComparison.OrdinalIgnoreCase))
+                          .ToArray();
+
+        index = Array.IndexOf(images, App.Instance.Args.First());
+
+        if (index == -1)
+        {
+            index = 0;
+        }
+
+        if (File.Exists(pngPath))
+        {
+            File.Delete(pngPath);
+        }
     }
 
     private void HandleArrowKeyInput()
@@ -136,7 +142,6 @@ public partial class MainScene : Node
 
     private void HandleFullscreenToggle()
     {
-        // Toggle fullscreen when the space key is pressed
         if (Raylib.IsKeyPressed(KeyboardKey.Space))
         {
             if (!Raylib.IsWindowFullscreen())
@@ -177,7 +182,7 @@ public partial class MainScene : Node
         }
     }
 
-    public static void ConvertToPng(string inputPath, string outputPath)
+    private static void ConvertToPng(string inputPath, string outputPath)
     {
         using Image image = Image.Load(inputPath);
         image.SaveAsPng(outputPath);
