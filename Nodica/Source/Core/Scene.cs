@@ -123,7 +123,7 @@ public class Scene
 
         for (int i = 0; i < (instance as Node).Children.Count; i ++)
         {
-            (instance as Node).Children[i].Build();
+            //(instance as Node).Children[i].Build();
             (instance as Node).Children[i].Start();
         }
 

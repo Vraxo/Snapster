@@ -1,7 +1,8 @@
 ﻿using Nodica;
-using Raylib_cs;
+using Nodica.Input;
 using SixLabors.ImageSharp;
 using Image = SixLabors.ImageSharp.Image;
+using Monitor = Nodica.Monitor;
 
 namespace Snapster;
 
@@ -23,7 +24,7 @@ public class MainScene : Node
 
         if (App.Instance.Args.Length == 0)
         {
-            //Environment.Exit(0);
+            Environment.Exit(0);
         }
         else
         {
@@ -77,7 +78,7 @@ public class MainScene : Node
 
     private void HandleArrowKeyInput()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Right))
+        if (Input.IsKeyPressed(KeyboardKey.Right))
         {
             if (index < images.Length - 1)
             {
@@ -88,7 +89,7 @@ public class MainScene : Node
             keyHoldTime = 0.0f;
         }
 
-        if (Raylib.IsKeyPressed(KeyboardKey.Left))
+        if (Input.IsKeyPressed(KeyboardKey.Left))
         {
             if (index > 0)
             {
@@ -99,12 +100,12 @@ public class MainScene : Node
             keyHoldTime = 0.0f;
         }
 
-        if (Raylib.IsKeyReleased(KeyboardKey.Right))
+        if (Input.IsKeyReleased(KeyboardKey.Right))
         {
             isRightKeyHeld = false;
         }
 
-        if (Raylib.IsKeyReleased(KeyboardKey.Left))
+        if (Input.IsKeyReleased(KeyboardKey.Left))
         {
             isLeftKeyHeld = false;
         }
@@ -114,11 +115,13 @@ public class MainScene : Node
     {
         if (isRightKeyHeld || isLeftKeyHeld)
         {
-            keyHoldTime += Raylib.GetFrameTime();
+            float deltaTime = Time.DeltaTime;
+
+            keyHoldTime += deltaTime;
 
             if (keyHoldTime >= delayBeforeRepeat)
             {
-                if (keyHoldTime % repeatRate < Raylib.GetFrameTime())
+                if (keyHoldTime % repeatRate < deltaTime)
                 {
                     if (isRightKeyHeld && index < images.Length - 1)
                     {
@@ -138,19 +141,18 @@ public class MainScene : Node
 
     private void HandleFullscreenToggle()
     {
-        if (Raylib.IsKeyPressed(KeyboardKey.Space))
+        if (Input.IsKeyPressed(KeyboardKey.Space))
         {
-            if (!Raylib.IsWindowFullscreen())
+            if (!Window.Fullscreen)
             {
                 Window.PreviousSize = Window.Size;
-                int monitor = Raylib.GetCurrentMonitor();
-                Raylib.SetWindowSize(Raylib.GetMonitorWidth(monitor), Raylib.GetMonitorHeight(monitor));
-                Raylib.ToggleFullscreen();
+                Window.Size = Monitor.Size;
+                Window.ToggleFullscreen();
             }
             else
             {
-                Raylib.ToggleFullscreen();
-                Raylib.SetWindowSize((int)Window.PreviousSize.X, (int)Window.PreviousSize.Y);
+                Window.ToggleFullscreen();
+                Window.Size = Window.PreviousSize;
             }
         }
     }
