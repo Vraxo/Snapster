@@ -23,7 +23,7 @@ public class MainScene : Node
 
         if (App.Instance.Args.Length == 0)
         {
-            Environment.Exit(0);
+            //Environment.Exit(0);
         }
         else
         {

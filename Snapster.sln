@@ -5,7 +5,7 @@ VisualStudioVersion = 17.11.35312.102
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Snapster", "Snapster\Snapster.csproj", "{AF3D35DA-046B-434B-908C-AD321DFE0C59}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nodica", "Nodex\Nodica.csproj", "{4E7D8854-B265-4149-BE64-77A04FD5CC0B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nodica", "Nodica\Nodica.csproj", "{4E7D8854-B265-4149-BE64-77A04FD5CC0B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

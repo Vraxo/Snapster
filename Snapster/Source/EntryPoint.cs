@@ -9,9 +9,9 @@ public class EntryPoint
     {
         App.Instance.Initialize(640, 480, "Snapster", args);
 
-        var rootNode = new Scene("MainScene.txt").Instantiate<MainScene>();
+        var rootNode = new Scene("MainScene.txt").Instantiate<MainScene>(true);
 
-        App.Instance.RootNode = rootNode;
+        //App.Instance.RootNode = rootNode;
         App.Instance.Run();
     }
 }

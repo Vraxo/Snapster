@@ -126,6 +126,7 @@ public class Node
                 foreach (var name in nodeNames)
                 {
                     currentNode = currentNode.GetChild(name);
+
                     if (currentNode == null)
                     {
                         return null;

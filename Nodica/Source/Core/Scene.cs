@@ -8,7 +8,6 @@ public class Scene
 
     public Scene(string path)
     {
-        // Only prepend "Resources/Scenes/" if the provided path doesn't already start with it
         if (!path.StartsWith("Resources/Scenes/"))
         {
             this.path = $"Resources/Scenes/{path}";
@@ -19,7 +18,7 @@ public class Scene
         }
     }
 
-    public T Instantiate<T>() where T : new()
+    public T Instantiate<T>(bool isRootNode = false) where T : new()
     {
         T instance = new();
         string[] fileLines = File.ReadAllLines(path);
@@ -27,7 +26,7 @@ public class Scene
         bool firstNode = true;
 
         // Dictionary to hold references to nodes by their names
-        var namedNodes = new Dictionary<string, Node>();
+        Dictionary<string, Node> namedNodes = [];
 
         foreach (string line in fileLines)
         {
@@ -37,7 +36,7 @@ public class Scene
             if (trimmedLine.StartsWith("[") && trimmedLine.EndsWith("]"))
             {
                 string content = trimmedLine[1..^1].Trim();
-                string[] parts = content.Split(new[] { ' ' }, 4); // Handle up to 4 parts (with scene reference)
+                string[] parts = content.Split([' '], 4); // Handle up to 4 parts (with scene reference)
 
                 string typeName = parts[0];
                 string nodeName = ExtractQuotedString(parts[1]);
@@ -114,9 +113,18 @@ public class Scene
             }
         }
 
-        foreach (Node child in (instance as Node).Children)
+        if (isRootNode)
         {
-            child.Start();
+            App.Instance.RootNode = instance as Node;
+        }
+
+        (instance as Node).Build();
+        (instance as Node).Start();
+
+        for (int i = 0; i < (instance as Node).Children.Count; i ++)
+        {
+            (instance as Node).Children[i].Build();
+            (instance as Node).Children[i].Start();
         }
 
         return instance;

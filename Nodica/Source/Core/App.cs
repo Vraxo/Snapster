@@ -22,13 +22,11 @@ public class App
     public void Initialize(int width, int height, string title, string[] args)
     {
         Args = args;
-
-        SetCurrentDirectory();
-
         Window.OriginalSize = new(width, height);
 
+        SetCurrentDirectory();
         SetWindowFlags();
-
+        
         Raylib.InitWindow(width, height, title);
         Raylib.SetWindowMinSize(width, height);
         Raylib.InitAudioDevice();

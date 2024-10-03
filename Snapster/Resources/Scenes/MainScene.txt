@@ -1,2 +1,4 @@
 ﻿[MainScene "MainScene"]
 [Scene "ImageDisplayer" "MainScene" "ImageDisplayer.txt"]
+[LineEdit "LineEdit" "MainScene"]
+Position = Vector2(200, 100)
