@@ -64,15 +64,6 @@ public partial class LineEdit : ClickableRectangle
         base.Start();
     }
 
-    private void OnSizeChanged(object? sender, Vector2 e)
-    {
-        if (previousWidth != e.X)
-        {
-            previousWidth = e.X;
-            TextStartIndex = 0;
-        }
-    }
-
     public override void Update()
     {
         OnUpdate(this);
@@ -80,6 +71,15 @@ public partial class LineEdit : ClickableRectangle
         PasteText();
         UpdateSizeToFitText();
         base.Update();
+    }
+
+    private void OnSizeChanged(object? sender, Vector2 e)
+    {
+        if (previousWidth != e.X)
+        {
+            previousWidth = e.X;
+            TextStartIndex = 0;
+        }
     }
 
     private void UpdateSizeToFitText()
@@ -129,12 +129,24 @@ public partial class LineEdit : ClickableRectangle
 
     private void HandleClicks()
     {
+        if (Raylib.IsMouseButtonPressed(MouseButton.Left))
+        {
+            if (!IsMouseOver())
+            {
+                Selected = false;
+                Style.Current = Style.Default;
+            }
+        }
+
         if (IsMouseOver())
         {
-            if (Raylib.IsMouseButtonDown(MouseButton.Left) && OnTopLeft)
+            if (Raylib.IsMouseButtonDown(MouseButton.Left))
             {
-                Selected = true;
-                Style.Current = Style.Pressed;
+                if (OnTopLeft)
+                {
+                    Selected = true;
+                    Style.Current = Style.Pressed;
+                }
             }
         }
         else

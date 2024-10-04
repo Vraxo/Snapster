@@ -28,6 +28,11 @@ public class Scene
         // Dictionary to hold references to nodes by their names
         Dictionary<string, Node> namedNodes = [];
 
+        if (isRootNode)
+        {
+            App.Instance.RootNode = instance as Node;
+        }
+
         foreach (string line in fileLines)
         {
             string trimmedLine = line.Trim();
@@ -68,7 +73,7 @@ public class Scene
                     }
                     else if (namedNodes.TryGetValue(parentName, out Node parentNode))
                     {
-                        parentNode.AddChild(referencedRootNode, nodeName, false); // Add the referenced scene's root node as a child
+                        parentNode.AddChild(referencedRootNode, nodeName, true); // Add the referenced scene's root node as a child
                         namedNodes[nodeName] = referencedRootNode;
                     }
                     else
@@ -94,7 +99,7 @@ public class Scene
                         if (parentName == null) throw new Exception($"Node '{nodeName}' must specify a parent.");
                         if (namedNodes.TryGetValue(parentName, out Node parentNode))
                         {
-                            parentNode.AddChild(obj as Node, nodeName, false);
+                            parentNode.AddChild(obj as Node, nodeName, true);
                         }
                         else
                         {
@@ -124,7 +129,7 @@ public class Scene
         for (int i = 0; i < (instance as Node).Children.Count; i ++)
         {
             //(instance as Node).Children[i].Build();
-            (instance as Node).Children[i].Start();
+            //(instance as Node).Children[i].Start();
         }
 
         return instance;

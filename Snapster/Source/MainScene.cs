@@ -24,7 +24,9 @@ public class MainScene : Node
 
         if (App.Instance.Args.Length == 0)
         {
-            Environment.Exit(0);
+            //Environment.Exit(0);
+            TextureLoader.Instance.Add("Icon", "Resources/Icon/Icon.png");
+            imageDisplayer.LoadTexture("Icon", true);
         }
         else
         {
@@ -55,7 +57,7 @@ public class MainScene : Node
         }
 
         TextureLoader.Instance.Add(App.Instance.Args.First(), imagePath);
-        imageDisplayer.LoadTexture(App.Instance.Args.First());
+        imageDisplayer.LoadTexture(App.Instance.Args.First(), true);
 
         images = Directory.GetFiles(imageDirectory, "*.*")
                           .Where(file => file.EndsWith(".png", StringComparison.OrdinalIgnoreCase) ||

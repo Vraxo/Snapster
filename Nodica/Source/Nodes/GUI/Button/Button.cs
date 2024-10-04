@@ -1,4 +1,5 @@
 ﻿using Raylib_cs;
+using System.Collections.Concurrent;
 
 namespace Nodica;
 
@@ -6,23 +7,24 @@ public class Button : ClickableRectangle
 {
     #region [ - - - Properties & Fields - - - ]
 
-    public Vector2         TextPadding      { get; set; } = Vector2.Zero;
-    public Vector2         TextOrigin       { get; set; } = Vector2.Zero;
-    public OriginPreset    TextOriginPreset { get; set; } = OriginPreset.Center;
-    public ButtonStyle     Style            { get; set; } = new();
-    public bool            PressedLeft      { get; set; } = false;
-    public bool            PressedRight     { get; set; } = false;
-    public bool            LimitText        { get; set; } = false;
-    public float           AvailableWidth   { get; set; } = 0;
-    public ButtonClickMode LeftClickMode    { get; set; } = ButtonClickMode.Limitless;
-    public ButtonClickMode RightClickMode   { get; set; } = ButtonClickMode.Limitless;
+    public Vector2 TextPadding { get; set; } = Vector2.Zero;
+    public Vector2 TextOrigin { get; set; } = Vector2.Zero;
+    public OriginPreset TextOriginPreset { get; set; } = OriginPreset.Center;
+    public ButtonStyle Style { get; set; } = new();
+    public bool PressedLeft { get; set; } = false;
+    public bool PressedRight { get; set; } = false;
+    public bool LimitText { get; set; } = false;
+    public float AvailableWidth { get; set; } = 0;
+    public ButtonClickMode LeftClickMode { get; set; } = ButtonClickMode.Limitless;
+    public ButtonClickMode RightClickMode { get; set; } = ButtonClickMode.Limitless;
+
     public Action<Button> OnUpdate = (button) => { };
 
     public event EventHandler? LeftClicked;
     public event EventHandler? RightClicked;
 
-    private bool   alreadyClicked = false;
-    private string displayedText  = "";
+    private bool alreadyClicked = false;
+    private string displayedText = "";
 
     private string _text = "";
     public string Text
@@ -62,7 +64,7 @@ public class Button : ClickableRectangle
         HandleLeftClicks();
         HandleRightClicks();
     }
-    
+
     // Left click handling
 
     private void HandleLeftClicks()
@@ -84,6 +86,18 @@ public class Button : ClickableRectangle
 
     private void HandleLeftClickLimitless()
     {
+        if (IsMouseOver())
+        {
+            if (Raylib.IsMouseButtonReleased(MouseButton.Left))
+            {
+                if (PressedLeft)
+                {
+                    PressedLeft = false;
+                    LeftClicked.Invoke(this, EventArgs.Empty);
+                }
+            }
+        }
+
         if (Raylib.IsMouseButtonDown(MouseButton.Left))
         {
             if (!IsMouseOver())
@@ -157,6 +171,7 @@ public class Button : ClickableRectangle
             if (IsMouseOver() && PressedLeft)
             {
                 LeftClicked?.Invoke(this, EventArgs.Empty);
+                Console.WriteLine("invoked 2");
             }
 
             PressedLeft = false;
@@ -296,9 +311,9 @@ public class Button : ClickableRectangle
         };
 
         Raylib.DrawRectangleRounded(
-            rectangle, 
-            Style.Current.Roundness, 
-            (int)Size.Y, 
+            rectangle,
+            Style.Current.Roundness,
+            (int)Size.Y,
             Style.Current.FillColor);
     }
 
@@ -334,11 +349,11 @@ public class Button : ClickableRectangle
     private void DrawText()
     {
         Raylib.DrawTextEx(
-            Style.Current.Font, 
-            displayedText, 
-            GetTextPosition(), 
-            Style.Current.FontSize, 
-            1, 
+            Style.Current.Font,
+            displayedText,
+            GetTextPosition(),
+            Style.Current.FontSize,
+            1,
             Style.Current.TextColor);
     }
 

@@ -43,7 +43,7 @@ public class ClickManager : Node
                 if (mouseButton == MouseButton.Left)
                 {
                     topClickable.OnTopLeft = true;
-                    //Console.WriteLine("on top left set to true " + topClickable.Name);
+                    Console.WriteLine("on top left set to true " + topClickable.Name);
                 }
                 else
                 {

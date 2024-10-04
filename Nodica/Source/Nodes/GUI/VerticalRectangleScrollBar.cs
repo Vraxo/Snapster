@@ -67,7 +67,7 @@
 //            Size = new(Size.X, 10),
 //        };
 //
-//        TopButton.LeftClicked += OnTopButtonLeftClicked;
+//        TopButton.OnLeftClick += OnTopButtonLeftClicked;
 //
 //        AddChild(TopButton);
 //    }
@@ -80,7 +80,7 @@
 //            Size = new(Size.X, 10),
 //        };
 //
-//        BottomButton.LeftClicked += OnBottomButtonLeftClicked;
+//        BottomButton.OnLeftClick += OnBottomButtonLeftClicked;
 //
 //        AddChild(BottomButton);
 //    }

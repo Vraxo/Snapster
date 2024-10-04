@@ -36,8 +36,8 @@ public class App
 
     public void Run()
     {
-        RootNode.Build();
-        RootNode.Start();
+        //RootNode.Build();
+        //RootNode.Start();
 
         RunLoop();
     }
@@ -64,6 +64,7 @@ public class App
         {
             Raylib.BeginDrawing();
             Raylib.ClearBackground(ThemeLoader.Instance.Colors["Background"]);
+            MouseManager.Instance.Update();
             RootNode.Process();
             Raylib.EndDrawing();
 

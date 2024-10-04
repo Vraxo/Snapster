@@ -19,10 +19,15 @@ public class TexturedRectangle : Node2D
         base.Update();
     }
 
-    public void LoadTexture(string name)
+    public void LoadTexture(string name, bool resize = false)
     {
         Texture = TextureLoader.Instance.Textures[name];
-        Size = new(Texture.Width, Texture.Height);
+
+        if (resize)
+        {
+            Size = new(Texture.Width, Texture.Height);
+            //Size = new(1280/4, 720/4);
+        }
     }
 
     private void Draw()
