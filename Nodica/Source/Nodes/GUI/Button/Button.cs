@@ -171,7 +171,6 @@ public class Button : ClickableRectangle
             if (IsMouseOver() && PressedLeft)
             {
                 LeftClicked?.Invoke(this, EventArgs.Empty);
-                Console.WriteLine("invoked 2");
             }
 
             PressedLeft = false;

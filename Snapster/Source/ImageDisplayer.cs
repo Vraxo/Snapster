@@ -6,7 +6,6 @@ public class ImageDisplayer : AspectRatioContainer
 {
     public override void Update()
     {
-        Console.WriteLine(Position);
         UpdateSize();
         base.Update();
     }

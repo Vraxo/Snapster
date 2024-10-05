@@ -26,7 +26,7 @@ public class Scene
         bool firstNode = true;
 
         // Dictionary to hold references to nodes by their names
-        Dictionary<string, Node> namedNodes = [];
+        Dictionary<string, Node> namedNodes = new();
 
         if (isRootNode)
         {
@@ -47,8 +47,8 @@ public class Scene
                 string nodeName = ExtractQuotedString(parts[1]);
                 string parentName = parts.Length >= 3 ? ExtractQuotedString(parts[2]) : null;
 
-                // Check if it's a SceneReference
-                if (typeName == "Scene" && parts.Length == 4)
+                // Check if it's a SceneReference (based on having 4 parts)
+                if (parts.Length == 4)
                 {
                     string scenePath = ExtractQuotedString(parts[3]);
 
@@ -58,16 +58,17 @@ public class Scene
                         scenePath = $"Resources/Scenes/{scenePath}";
                     }
 
-                    // Recursively load the scene
+                    // Recursively load the scene, using the specified type for the root node
                     Scene referencedScene = new Scene(scenePath);
-                    var referencedRootNode = referencedScene.Instantiate<Node>(); // Assume the root is of type Node
+                    Type rootNodeType = ResolveType(typeName);
+                    var referencedRootNode = referencedScene.Instantiate(rootNodeType) as Node;
 
                     // Set the name of the root node of the referenced scene
                     referencedRootNode.Name = nodeName;
 
                     if (parentName == null && firstNode)
                     {
-                        instance = (T)(object)referencedRootNode; // Cast to T (since it's Node) and assign as the root
+                        instance = (T)(object)referencedRootNode; // Cast to T and assign as the root
                         namedNodes[nodeName] = referencedRootNode;
                         firstNode = false;
                     }
@@ -126,13 +127,20 @@ public class Scene
         (instance as Node).Build();
         (instance as Node).Start();
 
-        for (int i = 0; i < (instance as Node).Children.Count; i ++)
+        for (int i = 0; i < (instance as Node).Children.Count; i++)
         {
-            //(instance as Node).Children[i].Build();
-            //(instance as Node).Children[i].Start();
+            // (instance as Node).Children[i].Build();
+            // (instance as Node).Children[i].Start();
         }
 
         return instance;
+    }
+
+    // Helper to instantiate a scene with a given type for the root node
+    private object Instantiate(Type type, bool isRootNode = false)
+    {
+        MethodInfo method = typeof(Scene).GetMethod(nameof(Instantiate)).MakeGenericMethod(type);
+        return method.Invoke(this, [isRootNode]);
     }
 
     private string ExtractQuotedString(string str)
@@ -160,7 +168,7 @@ public class Scene
             }
 
             // Try to find the type with a default Nodica if applicable
-            var defaultNamespace = assembly.GetName().Name; // Get the default Nodica
+            var defaultNamespace = assembly.GetName().Name;
             var namespacedTypeName = defaultNamespace + "." + typeName;
             type = assembly.GetType(namespacedTypeName, false, true);
             if (type != null)
@@ -169,8 +177,7 @@ public class Scene
             }
         }
 
-        // If no type found, return null
-        return null;
+        throw new Exception($"Type '{typeName}' not found.");
     }
 
     private void SetValue(object obj, string name, object value)
